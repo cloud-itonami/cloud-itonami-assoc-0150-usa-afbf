@@ -1,0 +1,83 @@
+(ns association-facts
+  (:export [main association-covered? entry-count entry-field topic-count
+            topic by-topic-count by-topic-id coverage-note]))
+
+(defn association-covered? [association :string] :i64
+  (string=? association "afbf"))
+
+(defn entry-count [association :string] :i64
+  (if (association-covered? association) 2 0))
+
+(defn valid-entry? [association :string index :i64] :i64
+  (if (association-covered? association)
+    (if (= index 0) 1 (if (= index 1) 1 0))
+    0))
+
+(defn entry-field [association :string index :i64 field :string]
+  [:option :string]
+  (if (valid-entry? association index)
+    (if (= index 0)
+      (cond
+        (string=? field "id") (option-some-of [:option :string] "afbf.who-we-are")
+        (string=? field "title") (option-some-of [:option :string] "Who We Are")
+        (string=? field "association") (option-some-of [:option :string] "afbf")
+        (string=? field "isic") (option-some-of [:option :string] "0150")
+        (string=? field "country") (option-some-of [:option :string] "USA")
+        (string=? field "kind") (option-some-of [:option :string] "governance-program")
+        (string=? field "url") (option-some-of [:option :string] "https://www.fb.org/about/who-we-are")
+        (string=? field "url-provenance") (option-some-of [:option :string] "official-association-site")
+        (string=? field "established-date") (option-some-of [:option :string] "1919-11-12")
+        (string=? field "retrieved-at") (option-some-of [:option :string] "2026-07-16")
+        :else (option-none-of [:option :string]))
+      (cond
+        (string=? field "id") (option-some-of [:option :string] "afbf.what-we-do")
+        (string=? field "title") (option-some-of [:option :string] "What We Do")
+        (string=? field "association") (option-some-of [:option :string] "afbf")
+        (string=? field "isic") (option-some-of [:option :string] "0150")
+        (string=? field "country") (option-some-of [:option :string] "USA")
+        (string=? field "kind") (option-some-of [:option :string] "governance-program")
+        (string=? field "url") (option-some-of [:option :string] "https://www.fb.org/about/what-we-do")
+        (string=? field "url-provenance") (option-some-of [:option :string] "official-association-site")
+        (string=? field "retrieved-at") (option-some-of [:option :string] "2026-07-16")
+        :else (option-none-of [:option :string])))
+    (option-none-of [:option :string])))
+
+(defn topic-count [association :string index :i64] :i64
+  (if (valid-entry? association index) 1 0))
+
+(defn topic [association :string index :i64 topic-index :i64]
+  [:option :string]
+  (if (valid-entry? association index)
+    (if (= topic-index 0)
+      (if (= index 0)
+        (option-some-of [:option :string] "governance")
+        (option-some-of [:option :string] "advocacy"))
+      (option-none-of [:option :string]))
+    (option-none-of [:option :string])))
+
+(defn by-topic-count [association :string candidate :string] :i64
+  (if (association-covered? association)
+    (if (string=? candidate "governance")
+      1
+      (if (string=? candidate "advocacy") 1 0))
+    0))
+
+(defn by-topic-id [association :string candidate :string index :i64]
+  [:option :string]
+  (if (association-covered? association)
+    (if (= index 0)
+      (if (string=? candidate "governance")
+        (entry-field association 0 "id")
+        (if (string=? candidate "advocacy")
+          (entry-field association 1 "id")
+          (option-none-of [:option :string])))
+      (option-none-of [:option :string]))
+    (option-none-of [:option :string])))
+
+(defn coverage-note [association :string] [:option :string]
+  (if (association-covered? association)
+    (option-some-of [:option :string]
+      "cloud-itonami-assoc-0150-usa-afbf Wave 0 (ADR-2607141700): 2 afbf entries seeded with an official fb.org citation. Extend the sovereign catalog; never fabricate a rule id/url.")
+    (option-none-of [:option :string])))
+
+(defn main [] :i64 0)
