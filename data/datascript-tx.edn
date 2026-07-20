@@ -1,5 +1,5 @@
-;; data/datascript-tx.edn — DataScript tx-data derived from
-;; src/association/facts.cljc `association.facts/catalog`
+;; data/datascript-tx.edn — provider artifact derived from
+;; src/association_facts.kotoba
 ;; (ADR-2607141700 Wave 0). Same shape as sibling files.
 
 [#:association-rule{:id "afbf.who-we-are"
